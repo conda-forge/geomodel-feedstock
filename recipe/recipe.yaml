@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   version: "6.27.0"
-  build_number: 2
+  build_number: 3
 
 recipe:
   name: geomodel-split
@@ -38,7 +38,11 @@ outputs:
         - sqlite
         - xerces-c
         - nlohmann_json
-        - eigen
+        # GeoModelKernel exposes Eigen::Matrix in public headers; per
+        # conda-forge eigen-feedstock README case C, the package that
+        # links Eigen depends on eigen-abi-devel so the ABI marker
+        # (eigen-abi) is pinned correctly.
+        - eigen-abi-devel
         - geant4
         - qt6-main
         - coin3d
@@ -51,7 +55,7 @@ outputs:
         - xorg-libx11
         - xorg-libxext
 
-  # ---- Core + IO (always present, minimal deps) ---------------------------
+  # ---- Core + IO (runtime libraries) --------------------------------------
   - package:
       name: geomodel-core
       version: ${{ version }}
@@ -66,22 +70,12 @@ outputs:
         - lib/libGeoModelRead.so*
         - lib/libGeoModelWrite.so*
         - lib/libTFPersistification.so*
-        - include/GeoGenericFunctions/**
-        - include/GeoModelKernel/**
-        - include/GeoModelHelpers/**
-        - include/GeoModelDBManager/**
-        - include/GeoModelIOHelpers/**
-        - include/GeoModelRead/**
-        - include/GeoModelWrite/**
-        - include/TFPersistification/**
-        - lib/cmake/GeoModelCore/**
-        - lib/cmake/GeoModelIO/**
     requirements:
       build:
         - ${{ compiler('cxx') }}
         - ${{ stdlib('c') }}
       host:
-        - eigen
+        - eigen-abi-devel
         - sqlite
       run_exports:
         weak:
@@ -97,9 +91,6 @@ outputs:
             - GeoModelWrite
             - GeoModelIOHelpers
             - TFPersistification
-          files:
-            - lib/cmake/GeoModelCore/GeoModelCoreConfig.cmake
-            - lib/cmake/GeoModelIO/GeoModelIOConfig.cmake
     about:
       homepage: https://geomodel.web.cern.ch/
       repository: https://gitlab.cern.ch/GeoModelDev/GeoModel
@@ -109,6 +100,60 @@ outputs:
         GeoGenericFunctions) and the I/O layer (GeoModelDBManager,
         GeoModelRead, GeoModelWrite, TFPersistification) for reading
         and writing GeoModel SQLite geometry files.
+      license: Apache-2.0
+      license_file: LICENSE
+
+  # ---- Core + IO development files (headers + CMake configs) --------------
+  - package:
+      name: geomodel-core-devel
+      version: ${{ version }}
+    inherit: geomodel-build
+    build:
+      files:
+        - include/GeoGenericFunctions/**
+        - include/GeoModelKernel/**
+        - include/GeoModelHelpers/**
+        - include/GeoModelDBManager/**
+        - include/GeoModelIOHelpers/**
+        - include/GeoModelRead/**
+        - include/GeoModelWrite/**
+        - include/TFPersistification/**
+        - lib/cmake/GeoModelCore/**
+        - lib/cmake/GeoModelIO/**
+    requirements:
+      host:
+        # eigen-abi-devel must be in host so pin_compatible('eigen-abi')
+        # below can resolve against eigen-abi (which eigen-abi-devel
+        # depends on).
+        - ${{ pin_subpackage('geomodel-core', exact=True) }}
+        - eigen-abi-devel
+        - sqlite
+      run:
+        - ${{ pin_subpackage('geomodel-core', exact=True) }}
+        # eigen-abi-devel exposes eigen at consumer build time
+        # (find_dependency(Eigen3 ...) in GeoModelCoreConfig.cmake);
+        # eigen-feedstock README case C.
+        - eigen-abi-devel
+        - sqlite
+      run_exports:
+        weak:
+          - ${{ pin_subpackage('geomodel-core', upper_bound='x.x') }}
+          - ${{ pin_compatible('eigen-abi', upper_bound='x.x.x.x') }}
+    tests:
+      - package_contents:
+          files:
+            - lib/cmake/GeoModelCore/GeoModelCoreConfig.cmake
+            - lib/cmake/GeoModelIO/GeoModelIOConfig.cmake
+    about:
+      homepage: https://geomodel.web.cern.ch/
+      repository: https://gitlab.cern.ch/GeoModelDev/GeoModel
+      summary: GeoModel core development files (headers + CMake configs)
+      description: |
+        Development files for geomodel-core: public headers under
+        include/GeoModelKernel etc. and CMake package configs under
+        lib/cmake/GeoModelCore and lib/cmake/GeoModelIO. Depend on this
+        package in a recipe's host: to build a downstream library that
+        uses GeoModelCore via find_package.
       license: Apache-2.0
       license_file: LICENSE
 
@@ -127,14 +172,6 @@ outputs:
         - lib/libGeoModelXMLParser.so*
         - lib/libGeoModelXml.so*
         - lib/libGMXPlugin.so*
-        - include/ExpressionEvaluator/**
-        - include/GDMLInterface/**
-        - include/GeoModelJSONParser/**
-        - include/GeoModelValidation/**
-        - include/GeoModelXMLDumper/**
-        - include/GeoModelXMLParser/**
-        - include/GeoModelXml/**
-        - lib/cmake/GeoModelTools/**
         - bin/gmcat
         - bin/gmstatistics
         - bin/gmintegritycheck
@@ -150,6 +187,7 @@ outputs:
         - ${{ stdlib('c') }}
       host:
         - ${{ pin_subpackage('geomodel-core', exact=True) }}
+        - eigen-abi-devel
         - xerces-c
         - nlohmann_json
       run_exports:
@@ -164,8 +202,6 @@ outputs:
             - gmcat
             - gmstatistics
             - gmintegritycheck
-          files:
-            - lib/cmake/GeoModelTools/GeoModelToolsConfig.cmake
     about:
       homepage: https://geomodel.web.cern.ch/
       repository: https://gitlab.cern.ch/GeoModelDev/GeoModel
@@ -178,7 +214,54 @@ outputs:
       license: Apache-2.0
       license_file: LICENSE
 
-  # ---- Geant4 interface ---------------------------------------------------
+  # ---- Tools development files --------------------------------------------
+  - package:
+      name: geomodel-tools-devel
+      version: ${{ version }}
+    inherit: geomodel-build
+    build:
+      files:
+        - include/ExpressionEvaluator/**
+        - include/GDMLInterface/**
+        - include/GeoModelJSONParser/**
+        - include/GeoModelValidation/**
+        - include/GeoModelXMLDumper/**
+        - include/GeoModelXMLParser/**
+        - include/GeoModelXml/**
+        - lib/cmake/GeoModelTools/**
+    requirements:
+      host:
+        - ${{ pin_subpackage('geomodel-tools', exact=True) }}
+        - ${{ pin_subpackage('geomodel-core-devel', exact=True) }}
+        - eigen-abi-devel
+        - xerces-c
+        - nlohmann_json
+      run:
+        - ${{ pin_subpackage('geomodel-tools', exact=True) }}
+        - ${{ pin_subpackage('geomodel-core-devel', exact=True) }}
+        - eigen-abi-devel
+        - xerces-c
+        - nlohmann_json
+      run_exports:
+        weak:
+          - ${{ pin_subpackage('geomodel-tools', upper_bound='x.x') }}
+          - ${{ pin_compatible('eigen-abi', upper_bound='x.x.x.x') }}
+    tests:
+      - package_contents:
+          files:
+            - lib/cmake/GeoModelTools/GeoModelToolsConfig.cmake
+    about:
+      homepage: https://geomodel.web.cern.ch/
+      repository: https://gitlab.cern.ch/GeoModelDev/GeoModel
+      summary: GeoModel tools development files (headers + CMake configs)
+      description: |
+        Development files for geomodel-tools: parser/dumper public
+        headers and the GeoModelTools CMake package config. Depend on
+        this in host: to build against GeoModelTools.
+      license: Apache-2.0
+      license_file: LICENSE
+
+  # ---- Geant4 interface (runtime libraries) -------------------------------
   - package:
       name: geomodel-g4
       version: ${{ version }}
@@ -187,15 +270,13 @@ outputs:
       files:
         - lib/libGeoMaterial2G4.so*
         - lib/libGeoModel2G4.so*
-        - include/GeoMaterial2G4/**
-        - include/GeoModel2G4/**
-        - lib/cmake/GeoModelG4/**
     requirements:
       build:
         - ${{ compiler('cxx') }}
         - ${{ stdlib('c') }}
       host:
         - ${{ pin_subpackage('geomodel-core', exact=True) }}
+        - eigen-abi-devel
         - geant4
       run_exports:
         weak:
@@ -205,8 +286,6 @@ outputs:
           lib:
             - GeoMaterial2G4
             - GeoModel2G4
-          files:
-            - lib/cmake/GeoModelG4/GeoModelG4Config.cmake
     about:
       homepage: https://geomodel.web.cern.ch/
       repository: https://gitlab.cern.ch/GeoModelDev/GeoModel
@@ -215,6 +294,46 @@ outputs:
         GeoModelG4 converts GeoModel geometry trees and materials into
         Geant4 logical volumes, enabling GeoModel-described detectors
         to be simulated with Geant4.
+      license: Apache-2.0
+      license_file: LICENSE
+
+  # ---- Geant4 interface development files ---------------------------------
+  - package:
+      name: geomodel-g4-devel
+      version: ${{ version }}
+    inherit: geomodel-build
+    build:
+      files:
+        - include/GeoMaterial2G4/**
+        - include/GeoModel2G4/**
+        - lib/cmake/GeoModelG4/**
+    requirements:
+      host:
+        - ${{ pin_subpackage('geomodel-g4', exact=True) }}
+        - ${{ pin_subpackage('geomodel-core-devel', exact=True) }}
+        - eigen-abi-devel
+        - geant4
+      run:
+        - ${{ pin_subpackage('geomodel-g4', exact=True) }}
+        - ${{ pin_subpackage('geomodel-core-devel', exact=True) }}
+        - eigen-abi-devel
+        - geant4
+      run_exports:
+        weak:
+          - ${{ pin_subpackage('geomodel-g4', upper_bound='x.x') }}
+          - ${{ pin_compatible('eigen-abi', upper_bound='x.x.x.x') }}
+    tests:
+      - package_contents:
+          files:
+            - lib/cmake/GeoModelG4/GeoModelG4Config.cmake
+    about:
+      homepage: https://geomodel.web.cern.ch/
+      repository: https://gitlab.cern.ch/GeoModelDev/GeoModel
+      summary: GeoModel G4 development files (headers + CMake configs)
+      description: |
+        Development files for geomodel-g4: GeoMaterial2G4/GeoModel2G4
+        public headers and the GeoModelG4 CMake package config. Depend
+        on this in host: to build against GeoModelG4.
       license: Apache-2.0
       license_file: LICENSE
 
@@ -231,8 +350,6 @@ outputs:
         - bin/gmmasscalc
         - bin/gmgeantino
         - bin/gm2gdml
-        - include/FullSimLight/**
-        - lib/cmake/FullSimLight/**
         - share/FullSimLight/**
         - share/man/man1/fullSimLight.1
         - share/man/man1/gmclash.1
@@ -246,6 +363,7 @@ outputs:
         - ${{ pin_subpackage('geomodel-core', exact=True) }}
         - ${{ pin_subpackage('geomodel-g4', exact=True) }}
         - ${{ pin_subpackage('geomodel-tools', exact=True) }}
+        - eigen-abi-devel
         - geant4
         - xerces-c
         - nlohmann_json
@@ -260,8 +378,6 @@ outputs:
             - gmmasscalc
             - gmgeantino
             - gm2gdml
-          files:
-            - lib/cmake/FullSimLight/FullSimLightConfig.cmake
     about:
       homepage: https://geomodel.web.cern.ch/
       repository: https://gitlab.cern.ch/GeoModelDev/GeoModel
@@ -271,6 +387,53 @@ outputs:
         for GeoModel geometries, used as a reference simulation and to
         run geometry clash, mass and geantino diagnostics (gmclash,
         gmmasscalc, gmgeantino).
+      license: Apache-2.0
+      license_file: LICENSE
+
+  # ---- FullSimLight development files -------------------------------------
+  - package:
+      name: geomodel-fullsimlight-devel
+      version: ${{ version }}
+    inherit: geomodel-build
+    build:
+      files:
+        - include/FullSimLight/**
+        - lib/cmake/FullSimLight/**
+    requirements:
+      host:
+        - ${{ pin_subpackage('geomodel-fullsimlight', exact=True) }}
+        - ${{ pin_subpackage('geomodel-core-devel', exact=True) }}
+        - ${{ pin_subpackage('geomodel-g4-devel', exact=True) }}
+        - ${{ pin_subpackage('geomodel-tools-devel', exact=True) }}
+        - eigen-abi-devel
+        - geant4
+        - xerces-c
+        - nlohmann_json
+      run:
+        - ${{ pin_subpackage('geomodel-fullsimlight', exact=True) }}
+        - ${{ pin_subpackage('geomodel-core-devel', exact=True) }}
+        - ${{ pin_subpackage('geomodel-g4-devel', exact=True) }}
+        - ${{ pin_subpackage('geomodel-tools-devel', exact=True) }}
+        - eigen-abi-devel
+        - geant4
+        - xerces-c
+        - nlohmann_json
+      run_exports:
+        weak:
+          - ${{ pin_subpackage('geomodel-fullsimlight', upper_bound='x.x') }}
+          - ${{ pin_compatible('eigen-abi', upper_bound='x.x.x.x') }}
+    tests:
+      - package_contents:
+          files:
+            - lib/cmake/FullSimLight/FullSimLightConfig.cmake
+    about:
+      homepage: https://geomodel.web.cern.ch/
+      repository: https://gitlab.cern.ch/GeoModelDev/GeoModel
+      summary: GeoModel FullSimLight development files (headers + CMake configs)
+      description: |
+        Development files for geomodel-fullsimlight: public headers
+        and the FullSimLight CMake package config. Depend on this in
+        host: to build against FullSimLight.
       license: Apache-2.0
       license_file: LICENSE
 
@@ -285,9 +448,6 @@ outputs:
         - bin/gmgraphbrowser
         - lib/libGX*.so*
         - lib/gxplugins/**
-        - include/VP1*/**
-        - include/GX*/**
-        - lib/cmake/GeoModelVisualization/**
         - share/gmex/**
         - share/man/man1/gmex.1
     requirements:
@@ -296,6 +456,7 @@ outputs:
         - ${{ stdlib('c') }}
       host:
         - ${{ pin_subpackage('geomodel-core', exact=True) }}
+        - eigen-abi-devel
         - qt6-main
         - coin3d
         - soqt6
@@ -307,8 +468,6 @@ outputs:
       - package_contents:
           bin:
             - gmex
-          files:
-            - lib/cmake/GeoModelVisualization/GeoModelVisualizationConfig.cmake
     about:
       homepage: https://geomodel.web.cern.ch/
       repository: https://gitlab.cern.ch/GeoModelDev/GeoModel
@@ -318,6 +477,51 @@ outputs:
         framework and the `gmex` geometry explorer GUI. Built on Qt6
         and Coin3D/SoQt6; opt-in because of the heavy GUI dependency
         stack.
+      license: Apache-2.0
+      license_file: LICENSE
+
+  # ---- Visualization development files ------------------------------------
+  - package:
+      name: geomodel-visualization-devel
+      version: ${{ version }}
+    inherit: geomodel-build
+    build:
+      files:
+        - include/VP1*/**
+        - include/GX*/**
+        - lib/cmake/GeoModelVisualization/**
+    requirements:
+      host:
+        - ${{ pin_subpackage('geomodel-visualization', exact=True) }}
+        - ${{ pin_subpackage('geomodel-core-devel', exact=True) }}
+        - eigen-abi-devel
+        - qt6-main
+        - coin3d
+        - soqt6
+        - hdf5
+      run:
+        - ${{ pin_subpackage('geomodel-visualization', exact=True) }}
+        - ${{ pin_subpackage('geomodel-core-devel', exact=True) }}
+        - eigen-abi-devel
+        - qt6-main
+        - coin3d
+        - soqt6
+        - hdf5
+      run_exports:
+        weak:
+          - ${{ pin_subpackage('geomodel-visualization', upper_bound='x.x') }}
+          - ${{ pin_compatible('eigen-abi', upper_bound='x.x.x.x') }}
+    tests:
+      - package_contents:
+          files:
+            - lib/cmake/GeoModelVisualization/GeoModelVisualizationConfig.cmake
+    about:
+      homepage: https://geomodel.web.cern.ch/
+      repository: https://gitlab.cern.ch/GeoModelDev/GeoModel
+      summary: GeoModel visualization development files (headers + CMake configs)
+      description: |
+        Development files for geomodel-visualization: VP1/GX public
+        headers and the GeoModelVisualization CMake package config.
       license: Apache-2.0
       license_file: LICENSE
 
@@ -337,20 +541,20 @@ outputs:
       - script:
           - test -f $PREFIX/bin/gmcat
           - test -f $PREFIX/bin/fullSimLight
-          - test -f $PREFIX/lib/cmake/GeoModelCore/GeoModelCoreConfig.cmake
-          - test -f $PREFIX/lib/cmake/GeoModelG4/GeoModelG4Config.cmake
     about:
       homepage: https://geomodel.web.cern.ch/
       repository: https://gitlab.cern.ch/GeoModelDev/GeoModel
-      summary: GeoModel metapackage (core + tools + G4 + FullSimLight)
+      summary: GeoModel runtime metapackage (core + tools + G4 + FullSimLight)
       description: |
-        Convenience metapackage that pulls in the core GeoModel stack:
-        geomodel-core, geomodel-tools, geomodel-g4 and
-        geomodel-fullsimlight. The visualization stack
+        Convenience metapackage that pulls in the core runtime
+        GeoModel stack: geomodel-core, geomodel-tools, geomodel-g4
+        and geomodel-fullsimlight. The visualization stack
         (geomodel-visualization) is opt-in and not pulled in by this
-        metapackage.
+        metapackage. For development against GeoModel, depend on the
+        matching -devel sub-packages (geomodel-core-devel, etc.).
       license: Apache-2.0
       license_file: LICENSE
+
 
 about:
   homepage: https://geomodel.web.cern.ch/
@@ -365,7 +569,11 @@ about:
     conversion (`geomodel-g4`), the FullSimLight simulation driver
     (`geomodel-fullsimlight`), an opt-in visualization stack
     (`geomodel-visualization`), and a `geomodel` metapackage that
-    pulls in everything except visualization.
+    pulls in everything except visualization. Each runtime output
+    has a matching `-devel` sub-package carrying the public headers
+    and CMake configs, following the eigen-feedstock case C
+    convention so that downstream `find_package` consumers get the
+    Eigen ABI marker (`eigen-abi`) propagated automatically.
   license: Apache-2.0
   license_file: LICENSE
 
