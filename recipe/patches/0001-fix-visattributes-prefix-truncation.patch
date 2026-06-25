@@ -1,0 +1,58 @@
+Subject: VisAttributes: force runtime strlen() on GEOMODEL_INSTALL_PREFIX
+
+VP1GeometrySystems/src/VisAttributes.cxx builds the gmex share-dir path
+in three places via:
+
+    const char * installPath = GEOMODEL_INSTALL_PREFIX;
+    std::string installedShare = installPath + std::string("/share/gmex/");
+
+GEOMODEL_INSTALL_PREFIX is a -D string literal baked in at CMake time.
+On conda-forge it is padded to a fixed length (~210 bytes) so that
+rattler-build's binary prefix replacement can swap in any shorter
+runtime prefix; the unused tail bytes become NUL.
+
+Because `installPath` is a `const char *` to a literal whose length GCC
+constant-folds, `char_traits::length(installPath)` returns the
+compile-time literal size (~210), not strlen() of the relocated string.
+The std::string therefore copies the embedded NULs. Passing
+`installedShare.c_str()` to std::ifstream truncates at the first NUL,
+so gmex opens the env prefix directory itself, libstdc++ throws
+"basic_filebuf::underflow error reading the file: Is a directory" from
+a Qt timer event, and gmex aborts before any geometry can be loaded.
+
+Constructing `std::string(GEOMODEL_INSTALL_PREFIX)` explicitly invokes
+the const-char* string constructor, which uses a runtime strlen that
+stops at the first NUL. Three identical fixes.
+
+--- a/GeoModelVisualization/VP1GeometrySystems/src/VisAttributes.cxx
++++ b/GeoModelVisualization/VP1GeometrySystems/src/VisAttributes.cxx
+@@ -295,8 +295,7 @@
+   if (gxShareDir) locations.insert(locations.begin(), gxShareDir+std::string("/"));
+   // Add 4)
+   //const char * installPath = STR_NAME( GEOMODEL_INSTALL_PREFIX ); // old CMake setup
+-  const char * installPath = GEOMODEL_INSTALL_PREFIX; // new CMake setup
+-  std::string installedShare = installPath + std::string("/share/gmex/");
++  std::string installedShare = std::string(GEOMODEL_INSTALL_PREFIX) + "/share/gmex/";
+   locations.push_back(installedShare);
+   // Add 5) and 6)
+   locations.push_back("/usr/local/share/gmex/");
+@@ -368,8 +367,7 @@
+   if (gxShareDir) locations.insert(locations.begin(), gxShareDir+std::string("/"));
+   // Add 4)
+   //const char * installPath = STR_NAME( GEOMODEL_INSTALL_PREFIX ); // old CMake setup
+-  const char * installPath = GEOMODEL_INSTALL_PREFIX; // new CMake setup
+-  std::string installedShare = installPath + std::string("/share/gmex/");
++  std::string installedShare = std::string(GEOMODEL_INSTALL_PREFIX) + "/share/gmex/";
+   locations.push_back(installedShare);
+   // Add 5) and 6)
+   locations.push_back("/usr/local/share/gmex/");
+@@ -441,8 +439,7 @@
+   if (gxShareDir) locations.insert(locations.begin(), gxShareDir+std::string("/"));
+   // Add 4)
+   //const char * installPath = STR_NAME( GEOMODEL_INSTALL_PREFIX ); // old CMake setup
+-  const char * installPath = GEOMODEL_INSTALL_PREFIX; // new CMake setup
+-  std::string installedShare = installPath + std::string("/share/gmex/");
++  std::string installedShare = std::string(GEOMODEL_INSTALL_PREFIX) + "/share/gmex/";
+   locations.push_back(installedShare);
+   // Add 5) and 6)
+   locations.push_back("/usr/local/share/gmex/");
