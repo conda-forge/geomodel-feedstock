@@ -11,15 +11,16 @@ Home: https://geomodel.web.cern.ch/
 
 Package license: Apache-2.0
 
-Summary: GeoModel metapackage (core + tools + G4 + FullSimLight)
+Summary: GeoModel runtime metapackage (core + tools + G4 + FullSimLight)
 
 Development: https://gitlab.cern.ch/GeoModelDev/GeoModel
 
-Convenience metapackage that pulls in the core GeoModel stack:
-geomodel-core, geomodel-tools, geomodel-g4 and
-geomodel-fullsimlight. The visualization stack
+Convenience metapackage that pulls in the core runtime
+GeoModel stack: geomodel-core, geomodel-tools, geomodel-g4
+and geomodel-fullsimlight. The visualization stack
 (geomodel-visualization) is opt-in and not pulled in by this
-metapackage.
+metapackage. For development against GeoModel, depend on the
+matching -devel sub-packages (geomodel-core-devel, etc.).
 
 About geomodel-core
 -------------------
@@ -37,6 +38,23 @@ GeoGenericFunctions) and the I/O layer (GeoModelDBManager,
 GeoModelRead, GeoModelWrite, TFPersistification) for reading
 and writing GeoModel SQLite geometry files.
 
+About geomodel-core-devel
+-------------------------
+
+Home: https://geomodel.web.cern.ch/
+
+Package license: Apache-2.0
+
+Summary: GeoModel core development files (headers + CMake configs)
+
+Development: https://gitlab.cern.ch/GeoModelDev/GeoModel
+
+Development files for geomodel-core: public headers under
+include/GeoModelKernel etc. and CMake package configs under
+lib/cmake/GeoModelCore and lib/cmake/GeoModelIO. Depend on this
+package in a recipe's host: to build a downstream library that
+uses GeoModelCore via find_package.
+
 About geomodel-fullsimlight
 ---------------------------
 
@@ -53,6 +71,21 @@ for GeoModel geometries, used as a reference simulation and to
 run geometry clash, mass and geantino diagnostics (gmclash,
 gmmasscalc, gmgeantino).
 
+About geomodel-fullsimlight-devel
+---------------------------------
+
+Home: https://geomodel.web.cern.ch/
+
+Package license: Apache-2.0
+
+Summary: GeoModel FullSimLight development files (headers + CMake configs)
+
+Development: https://gitlab.cern.ch/GeoModelDev/GeoModel
+
+Development files for geomodel-fullsimlight: public headers
+and the FullSimLight CMake package config. Depend on this in
+host: to build against FullSimLight.
+
 About geomodel-g4
 -----------------
 
@@ -67,6 +100,21 @@ Development: https://gitlab.cern.ch/GeoModelDev/GeoModel
 GeoModelG4 converts GeoModel geometry trees and materials into
 Geant4 logical volumes, enabling GeoModel-described detectors
 to be simulated with Geant4.
+
+About geomodel-g4-devel
+-----------------------
+
+Home: https://geomodel.web.cern.ch/
+
+Package license: Apache-2.0
+
+Summary: GeoModel G4 development files (headers + CMake configs)
+
+Development: https://gitlab.cern.ch/GeoModelDev/GeoModel
+
+Development files for geomodel-g4: GeoMaterial2G4/GeoModel2G4
+public headers and the GeoModelG4 CMake package config. Depend
+on this in host: to build against GeoModelG4.
 
 About geomodel-tools
 --------------------
@@ -84,6 +132,21 @@ descriptions, plus command-line utilities (gmcat,
 gmstatistics, gmintegritycheck, gdml2gm, dumpGeoXML) for
 working with GeoModel SQLite geometry files.
 
+About geomodel-tools-devel
+--------------------------
+
+Home: https://geomodel.web.cern.ch/
+
+Package license: Apache-2.0
+
+Summary: GeoModel tools development files (headers + CMake configs)
+
+Development: https://gitlab.cern.ch/GeoModelDev/GeoModel
+
+Development files for geomodel-tools: parser/dumper public
+headers and the GeoModelTools CMake package config. Depend on
+this in host: to build against GeoModelTools.
+
 About geomodel-visualization
 ----------------------------
 
@@ -99,6 +162,20 @@ GeoModelVisualization provides the VP1-derived 3D visualization
 framework and the `gmex` geometry explorer GUI. Built on Qt6
 and Coin3D/SoQt6; opt-in because of the heavy GUI dependency
 stack.
+
+About geomodel-visualization-devel
+----------------------------------
+
+Home: https://geomodel.web.cern.ch/
+
+Package license: Apache-2.0
+
+Summary: GeoModel visualization development files (headers + CMake configs)
+
+Development: https://gitlab.cern.ch/GeoModelDev/GeoModel
+
+Development files for geomodel-visualization: VP1/GX public
+headers and the GeoModelVisualization CMake package config.
 
 Current build status
 ====================
@@ -121,10 +198,15 @@ Current release info
 | --- | --- | --- | --- |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-geomodel-green.svg)](https://anaconda.org/conda-forge/geomodel) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/geomodel.svg)](https://anaconda.org/conda-forge/geomodel) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/geomodel.svg)](https://anaconda.org/conda-forge/geomodel) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/geomodel.svg)](https://anaconda.org/conda-forge/geomodel) |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-geomodel--core-green.svg)](https://anaconda.org/conda-forge/geomodel-core) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/geomodel-core.svg)](https://anaconda.org/conda-forge/geomodel-core) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/geomodel-core.svg)](https://anaconda.org/conda-forge/geomodel-core) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/geomodel-core.svg)](https://anaconda.org/conda-forge/geomodel-core) |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-geomodel--core--devel-green.svg)](https://anaconda.org/conda-forge/geomodel-core-devel) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/geomodel-core-devel.svg)](https://anaconda.org/conda-forge/geomodel-core-devel) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/geomodel-core-devel.svg)](https://anaconda.org/conda-forge/geomodel-core-devel) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/geomodel-core-devel.svg)](https://anaconda.org/conda-forge/geomodel-core-devel) |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-geomodel--fullsimlight-green.svg)](https://anaconda.org/conda-forge/geomodel-fullsimlight) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/geomodel-fullsimlight.svg)](https://anaconda.org/conda-forge/geomodel-fullsimlight) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/geomodel-fullsimlight.svg)](https://anaconda.org/conda-forge/geomodel-fullsimlight) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/geomodel-fullsimlight.svg)](https://anaconda.org/conda-forge/geomodel-fullsimlight) |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-geomodel--fullsimlight--devel-green.svg)](https://anaconda.org/conda-forge/geomodel-fullsimlight-devel) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/geomodel-fullsimlight-devel.svg)](https://anaconda.org/conda-forge/geomodel-fullsimlight-devel) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/geomodel-fullsimlight-devel.svg)](https://anaconda.org/conda-forge/geomodel-fullsimlight-devel) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/geomodel-fullsimlight-devel.svg)](https://anaconda.org/conda-forge/geomodel-fullsimlight-devel) |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-geomodel--g4-green.svg)](https://anaconda.org/conda-forge/geomodel-g4) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/geomodel-g4.svg)](https://anaconda.org/conda-forge/geomodel-g4) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/geomodel-g4.svg)](https://anaconda.org/conda-forge/geomodel-g4) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/geomodel-g4.svg)](https://anaconda.org/conda-forge/geomodel-g4) |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-geomodel--g4--devel-green.svg)](https://anaconda.org/conda-forge/geomodel-g4-devel) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/geomodel-g4-devel.svg)](https://anaconda.org/conda-forge/geomodel-g4-devel) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/geomodel-g4-devel.svg)](https://anaconda.org/conda-forge/geomodel-g4-devel) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/geomodel-g4-devel.svg)](https://anaconda.org/conda-forge/geomodel-g4-devel) |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-geomodel--tools-green.svg)](https://anaconda.org/conda-forge/geomodel-tools) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/geomodel-tools.svg)](https://anaconda.org/conda-forge/geomodel-tools) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/geomodel-tools.svg)](https://anaconda.org/conda-forge/geomodel-tools) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/geomodel-tools.svg)](https://anaconda.org/conda-forge/geomodel-tools) |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-geomodel--tools--devel-green.svg)](https://anaconda.org/conda-forge/geomodel-tools-devel) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/geomodel-tools-devel.svg)](https://anaconda.org/conda-forge/geomodel-tools-devel) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/geomodel-tools-devel.svg)](https://anaconda.org/conda-forge/geomodel-tools-devel) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/geomodel-tools-devel.svg)](https://anaconda.org/conda-forge/geomodel-tools-devel) |
 | [![Conda Recipe](https://img.shields.io/badge/recipe-geomodel--visualization-green.svg)](https://anaconda.org/conda-forge/geomodel-visualization) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/geomodel-visualization.svg)](https://anaconda.org/conda-forge/geomodel-visualization) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/geomodel-visualization.svg)](https://anaconda.org/conda-forge/geomodel-visualization) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/geomodel-visualization.svg)](https://anaconda.org/conda-forge/geomodel-visualization) |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-geomodel--visualization--devel-green.svg)](https://anaconda.org/conda-forge/geomodel-visualization-devel) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/geomodel-visualization-devel.svg)](https://anaconda.org/conda-forge/geomodel-visualization-devel) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/geomodel-visualization-devel.svg)](https://anaconda.org/conda-forge/geomodel-visualization-devel) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/geomodel-visualization-devel.svg)](https://anaconda.org/conda-forge/geomodel-visualization-devel) |
 
 Installing geomodel
 ===================
@@ -136,16 +218,16 @@ conda config --add channels conda-forge
 conda config --set channel_priority strict
 ```
 
-Once the `conda-forge` channel has been enabled, `geomodel, geomodel-core, geomodel-fullsimlight, geomodel-g4, geomodel-tools, geomodel-visualization` can be installed with `conda`:
+Once the `conda-forge` channel has been enabled, `geomodel, geomodel-core, geomodel-core-devel, geomodel-fullsimlight, geomodel-fullsimlight-devel, geomodel-g4, geomodel-g4-devel, geomodel-tools, geomodel-tools-devel, geomodel-visualization, geomodel-visualization-devel` can be installed with `conda`:
 
 ```
-conda install geomodel geomodel-core geomodel-fullsimlight geomodel-g4 geomodel-tools geomodel-visualization
+conda install geomodel geomodel-core geomodel-core-devel geomodel-fullsimlight geomodel-fullsimlight-devel geomodel-g4 geomodel-g4-devel geomodel-tools geomodel-tools-devel geomodel-visualization geomodel-visualization-devel
 ```
 
 or with `mamba`:
 
 ```
-mamba install geomodel geomodel-core geomodel-fullsimlight geomodel-g4 geomodel-tools geomodel-visualization
+mamba install geomodel geomodel-core geomodel-core-devel geomodel-fullsimlight geomodel-fullsimlight-devel geomodel-g4 geomodel-g4-devel geomodel-tools geomodel-tools-devel geomodel-visualization geomodel-visualization-devel
 ```
 
 It is possible to list all of the versions of `geomodel` available on your platform with `conda`:
