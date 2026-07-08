@@ -1,8 +1,8 @@
 schema_version: 1
 
 context:
-  version: "6.27.0"
-  build_number: 3
+  version: "6.28.0"
+  build_number: 0
 
 recipe:
   name: geomodel-split
@@ -10,7 +10,7 @@ recipe:
 
 source:
   url: https://gitlab.cern.ch/GeoModelDev/GeoModel/-/archive/${{ version }}/GeoModel-${{ version }}.tar.gz
-  sha256: 018c5087b70d956793d06dc040f842018eb3bedd9b2f175c6090af63ce963408
+  sha256: 212f0a6d3d3cbfb1f7ff957c5cfe660e4b71773f34eec915930ede309702f4e3
   patches:
     - patches/0001-fix-visattributes-prefix-truncation.patch
 
