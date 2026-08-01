@@ -1,7 +1,7 @@
 schema_version: 1
 
 context:
-  version: "6.30.0"
+  version: "6.31.0"
   build_number: 0
 
 recipe:
@@ -10,7 +10,7 @@ recipe:
 
 source:
   url: https://gitlab.cern.ch/GeoModelDev/GeoModel/-/archive/${{ version }}/GeoModel-${{ version }}.tar.gz
-  sha256: 8a5c9832d5bb0293a0064ffe9956a227bc0334ca32c6d05d455967e26f9ccc55
+  sha256: d18e60ed8c0a6560300edb1f8555301dd248a6e2a3dba96a3684b1840fee0535
 
 build:
   number: ${{ build_number }}
