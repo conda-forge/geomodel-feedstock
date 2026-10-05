@@ -39,6 +39,7 @@ outputs:
         - xerces-c
         - nlohmann_json
         - eigen
+        - zlib
         - geant4
         - qt6-main
         - coin3d
@@ -152,6 +153,7 @@ outputs:
         - ${{ pin_subpackage('geomodel-core', exact=True) }}
         - xerces-c
         - nlohmann_json
+        - zlib
       run_exports:
         weak:
           - ${{ pin_subpackage('geomodel-tools', upper_bound='x.x') }}
