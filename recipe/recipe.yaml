@@ -1,8 +1,8 @@
 schema_version: 1
 
 context:
-  version: "6.31.0"
-  build_number: 1
+  version: "6.32.0"
+  build_number: 0
 
 recipe:
   name: geomodel-split
@@ -10,7 +10,7 @@ recipe:
 
 source:
   url: https://gitlab.cern.ch/GeoModelDev/GeoModel/-/archive/${{ version }}/GeoModel-${{ version }}.tar.gz
-  sha256: d18e60ed8c0a6560300edb1f8555301dd248a6e2a3dba96a3684b1840fee0535
+  sha256: a1268984d784b1b7de836eb5f69a79b3d98d06724e7b3f89684ec84f764f16e0
 
 build:
   number: ${{ build_number }}
