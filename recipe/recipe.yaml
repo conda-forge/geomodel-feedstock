@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   version: "6.32.0"
-  build_number: 0
+  build_number: 1
 
 recipe:
   name: geomodel-split
@@ -11,6 +11,10 @@ recipe:
 source:
   url: https://gitlab.cern.ch/GeoModelDev/GeoModel/-/archive/${{ version }}/GeoModel-${{ version }}.tar.gz
   sha256: a1268984d784b1b7de836eb5f69a79b3d98d06724e7b3f89684ec84f764f16e0
+  patches:
+    # fullSimLight aborts on /run/initialize when no field is set
+    # (ShipSoft/Geometry#90); drop once upstream releases the fix
+    - patches/0001-fsl-empty-field-plugin.patch
 
 build:
   number: ${{ build_number }}
