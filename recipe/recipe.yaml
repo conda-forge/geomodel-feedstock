@@ -38,6 +38,11 @@ outputs:
         - ${{ stdlib('c') }}
         - cmake
         - make
+        # moc / uic / rcc for the AUTOMOC'd visualization targets must run
+        # on the build machine (QT_HOST_PATH in build.sh).
+        - if: build_platform != target_platform
+          then:
+            - qt6-main
       host:
         - sqlite
         - xerces-c
