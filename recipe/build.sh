@@ -1,5 +1,10 @@
 #!/bin/bash -e
 
+if [[ "${build_platform}" != "${target_platform}" ]]; then
+    # Use the build machine's Qt host tools (moc, uic, rcc).
+    CMAKE_ARGS="${CMAKE_ARGS} -DQT_HOST_PATH=${BUILD_PREFIX}"
+fi
+
 cmake ${CMAKE_ARGS} -S ${SRC_DIR} -B build \
     -DCMAKE_CXX_STANDARD=20 \
     -DCMAKE_CXX_FLAGS="-fvisibility-inlines-hidden" \
