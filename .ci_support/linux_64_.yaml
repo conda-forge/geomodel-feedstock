@@ -1,3 +1,5 @@
+DOCKER_PLATFORM:
+- linux/amd64
 c_stdlib:
 - sysroot
 c_stdlib_version:
@@ -21,7 +23,7 @@ geant4:
 hdf5:
 - 1.14.6
 qt6_main:
-- '6'
+- '6.11'
 sqlite:
 - '3'
 target_platform:

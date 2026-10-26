@@ -11,23 +11,6 @@ Home: https://geomodel.web.cern.ch/
 
 Package license: Apache-2.0
 
-Summary: GeoModel metapackage (core + tools + G4 + FullSimLight)
-
-Development: https://gitlab.cern.ch/GeoModelDev/GeoModel
-
-Convenience metapackage that pulls in the core GeoModel stack:
-geomodel-core, geomodel-tools, geomodel-g4 and
-geomodel-fullsimlight. The visualization stack
-(geomodel-visualization) is opt-in and not pulled in by this
-metapackage.
-
-About geomodel-core
--------------------
-
-Home: https://geomodel.web.cern.ch/
-
-Package license: Apache-2.0
-
 Summary: GeoModel core kernel and I/O libraries
 
 Development: https://gitlab.cern.ch/GeoModelDev/GeoModel
@@ -84,6 +67,23 @@ descriptions, plus command-line utilities (gmcat,
 gmstatistics, gmintegritycheck, gdml2gm, dumpGeoXML) for
 working with GeoModel SQLite geometry files.
 
+About geomodel
+--------------
+
+Home: https://geomodel.web.cern.ch/
+
+Package license: Apache-2.0
+
+Summary: GeoModel metapackage (core + tools + G4 + FullSimLight)
+
+Development: https://gitlab.cern.ch/GeoModelDev/GeoModel
+
+Convenience metapackage that pulls in the core GeoModel stack:
+geomodel-core, geomodel-tools, geomodel-g4 and
+geomodel-fullsimlight. The visualization stack
+(geomodel-visualization) is opt-in and not pulled in by this
+metapackage.
+
 About geomodel-visualization
 ----------------------------
 
@@ -110,6 +110,45 @@ Current build status
       <a href="https://github.com/conda-forge/geomodel-feedstock/actions/workflows/conda-build.yml">
         <img src="https://github.com/conda-forge/geomodel-feedstock/actions/workflows/conda-build.yml/badge.svg?event=push&branch=main">
       </a>
+    </td>
+  </tr>
+    
+  <tr>
+    <td>Azure</td>
+    <td>
+      <details>
+        <summary>
+          <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=28669&branchName=main">
+            <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/geomodel-feedstock?branchName=main">
+          </a>
+        </summary>
+        <table>
+          <thead><tr><th>Variant</th><th>Status</th></tr></thead>
+          <tbody><tr>
+              <td>osx_arm64_geant410.7.4</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=28669&branchName=main">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/geomodel-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_arm64_geant410.7.4" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
+              <td>osx_arm64_geant411.3.2</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=28669&branchName=main">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/geomodel-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_arm64_geant411.3.2" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
+              <td>osx_arm64_geant411.4.3</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=28669&branchName=main">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/geomodel-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_arm64_geant411.4.3" alt="variant">
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </details>
     </td>
   </tr>
 </table>
@@ -218,6 +257,7 @@ mamba repoquery depends geomodel --channel conda-forge
 </details>
 
 
+
 About conda-forge
 =================
 
@@ -232,9 +272,7 @@ for each of the installable packages. Such a repository is known as a *feedstock
 A feedstock is made up of a conda recipe (the instructions on what and how to build
 the package) and the necessary configurations for automatic building using freely
 available continuous integration services. Thanks to the awesome service provided by
-[Azure](https://azure.microsoft.com/en-us/services/devops/), [GitHub](https://github.com/),
-[CircleCI](https://circleci.com/), [AppVeyor](https://www.appveyor.com/),
-[Drone](https://cloud.drone.io/welcome), and [TravisCI](https://travis-ci.com/)
+[Azure](https://azure.microsoft.com/en-us/services/devops/) and [GitHub](https://github.com/)
 it is possible to build and upload installable packages to the
 [conda-forge](https://anaconda.org/conda-forge) [anaconda.org](https://anaconda.org/)
 channel for Linux, Windows and OSX respectively.
