@@ -1,0 +1,51 @@
+From 5bbbff9dc46640774a6ee955e9a64a79c89e2348 Mon Sep 17 00:00:00 2001
+From: Oliver Lantwin <oliver.lantwin@cern.ch>
+Date: Mon, 26 Oct 2026 20:14:04 +0100
+Subject: [PATCH] GeoModelHelpers - Use -fexperimental-library only with Apple
+ Clang
+
+GeoModelHelpers added -fexperimental-library as a public compile option
+on every Apple platform, because Apple Clang only provides
+std::stop_token and std::jthread behind it. Upstream Clang has both by
+default since libc++ 20, and there the flag also turns on libc++'s
+experimental time zone support. The macOS availability annotations
+mark that as unavailable, so any file that includes <chrono> or
+<format> fails to compile, for GeoModel itself and for every consumer
+that links GeoModelHelpers. This breaks the conda-forge osx-arm64
+build, which uses upstream Clang.
+
+Apply the flag through a generator expression on the compiler ID, so
+Apple Clang builds keep it and other compilers on macOS don't get it.
+Because the option is public, the expression is evaluated with each
+consumer's compiler.
+
+Assisted-by: Claude Code:claude-opus-5-5
+---
+ GeoModelCore/GeoModelHelpers/CMakeLists.txt | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/GeoModelCore/GeoModelHelpers/CMakeLists.txt b/GeoModelCore/GeoModelHelpers/CMakeLists.txt
+index 1729a418..ea78c176 100644
+--- a/GeoModelCore/GeoModelHelpers/CMakeLists.txt
++++ b/GeoModelCore/GeoModelHelpers/CMakeLists.txt
+@@ -9,10 +9,13 @@ add_library( GeoModelHelpers SHARED ${HEADERS} ${SOURCES} )
+ 
+ target_link_libraries( GeoModelHelpers PRIVATE GeoModelCore::GeoModelKernel nlohmann_json::nlohmann_json pthread )
+ 
+-#APPLE Clang not yet supporting stop_lock
+-if( APPLE )
+-  target_compile_options(GeoModelHelpers PUBLIC -fexperimental-library)
+-endif()
++# Apple Clang only provides std::stop_token / std::jthread behind
++# -fexperimental-library. Upstream Clang (libc++ 20 and later) has them by
++# default, and there the flag also enables libc++'s experimental time zone
++# support, which the macOS availability annotations then reject. The
++# generator expression is evaluated with each consumer's compiler.
++target_compile_options( GeoModelHelpers PUBLIC
++   $<$<CXX_COMPILER_ID:AppleClang>:-fexperimental-library> )
+ 
+ target_include_directories( GeoModelHelpers PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+-- 
+2.54.0
+
