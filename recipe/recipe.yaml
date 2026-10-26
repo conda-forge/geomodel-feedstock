@@ -49,6 +49,10 @@ outputs:
         - eigen
         - zlib
         - geant4
+        # Geant4Config.cmake calls find_dependency(EXPAT), but geant4 only
+        # brings libexpat. On Linux expat arrived through the visualization
+        # stack; without it, macOS picks up the SDK's outdated libexpat.
+        - expat
         - freetype
         - hdf5
         # GeoModelVisualization only; it needs the X11 / GLVND / EGL stack, so
