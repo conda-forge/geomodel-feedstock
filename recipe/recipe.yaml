@@ -11,14 +11,6 @@ recipe:
 source:
   url: https://gitlab.cern.ch/GeoModelDev/GeoModel/-/archive/${{ version }}/GeoModel-${{ version }}.tar.gz
   sha256: 3d53d7f602f3f01addcb1f598f16bc99c7e13451259aab55dceb5c3f3cc8a966
-  patches:
-    # fullSimLight aborts on /run/initialize when no field is set
-    # (ShipSoft/Geometry#90); drop once upstream releases the fix
-    - patches/0001-fsl-empty-field-plugin.patch
-    # GeoModelHelpers adds -fexperimental-library on every Apple platform,
-    # which breaks <chrono>/<format> with conda-forge's upstream clang;
-    # restrict it to Apple Clang. Drop once upstream releases the fix.
-    - patches/0002-apple-experimental-library-appleclang-only.patch
 
 build:
   number: ${{ build_number }}
