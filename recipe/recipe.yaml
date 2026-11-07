@@ -69,7 +69,12 @@ outputs:
   - package:
       name: geomodel-core
       version: ${{ version }}
-    inherit: geomodel-build
+    inherit:
+      from: geomodel-build
+      # Take run requirements from this output's own host list, not the
+      # whole staging host, which would make every output depend on Geant4,
+      # Qt, HDF5 and the X11 stack.
+      run_exports: false
     build:
       files:
         - lib/libGeoGenericFunctions.*
@@ -130,7 +135,10 @@ outputs:
   - package:
       name: geomodel-tools
       version: ${{ version }}
-    inherit: geomodel-build
+    inherit:
+      from: geomodel-build
+      # See geomodel-core.
+      run_exports: false
     build:
       files:
         - lib/libExpressionEvaluator.*
@@ -167,6 +175,8 @@ outputs:
         - xerces-c
         - nlohmann_json
         - zlib
+        # gmintegritycheck opens the SQLite file directly.
+        - sqlite
       run_exports:
         weak:
           - ${{ pin_subpackage('geomodel-tools', upper_bound='x.x') }}
@@ -197,7 +207,10 @@ outputs:
   - package:
       name: geomodel-g4
       version: ${{ version }}
-    inherit: geomodel-build
+    inherit:
+      from: geomodel-build
+      # See geomodel-core.
+      run_exports: false
     build:
       files:
         - lib/libGeoMaterial2G4.*
@@ -213,6 +226,7 @@ outputs:
         - ${{ pin_subpackage('geomodel-core', exact=True) }}
         - geant4
         - freetype
+        - clhep
       run_exports:
         weak:
           - ${{ pin_subpackage('geomodel-g4', upper_bound='x.x') }}
@@ -238,7 +252,10 @@ outputs:
   - package:
       name: geomodel-fullsimlight
       version: ${{ version }}
-    inherit: geomodel-build
+    inherit:
+      from: geomodel-build
+      # See geomodel-core.
+      run_exports: false
     build:
       files:
         - bin/fullSimLight
@@ -264,6 +281,9 @@ outputs:
         - ${{ pin_subpackage('geomodel-tools', exact=True) }}
         - geant4
         - freetype
+        - clhep
+        # libGenerateHitsPlugin and libGenerateTracksPlugin write HDF5.
+        - hdf5
         - xerces-c
         - nlohmann_json
       run_exports:
@@ -295,7 +315,10 @@ outputs:
   - package:
       name: geomodel-visualization
       version: ${{ version }}
-    inherit: geomodel-build
+    inherit:
+      from: geomodel-build
+      # See geomodel-core.
+      run_exports: false
     build:
       # Needs the Linux-only X11 / GLVND / EGL stack; not built on macOS.
       skip:
@@ -320,6 +343,13 @@ outputs:
         - coin3d
         - soqt6
         - hdf5
+        - libglvnd-devel
+        - libglx-devel
+        - libegl-devel
+        - libopengl-devel
+        - libglu
+        - xorg-libx11
+        - xorg-libxext
       run_exports:
         weak:
           - ${{ pin_subpackage('geomodel-visualization', upper_bound='x.x') }}
