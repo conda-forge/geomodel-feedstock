@@ -177,6 +177,11 @@ outputs:
         - zlib
         # gmintegritycheck opens the SQLite file directly.
         - sqlite
+      # GeoModelToolsConfig.cmake calls find_dependency(nlohmann_json), and
+      # nlohmann_json is header-only with no run_exports, so without this
+      # every consumer has to add it to its own host.
+      run:
+        - ${{ pin_compatible('nlohmann_json', upper_bound='x') }}
       run_exports:
         weak:
           - ${{ pin_subpackage('geomodel-tools', upper_bound='x.x') }}
