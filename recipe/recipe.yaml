@@ -2,7 +2,7 @@ schema_version: 1
 
 context:
   version: "6.33.0"
-  build_number: 0
+  build_number: 1
 
 recipe:
   name: geomodel-split
@@ -347,12 +347,22 @@ outputs:
       version: ${{ version }}
     build:
       noarch: generic
+      # The pins below carry no build string, so the output is the same on
+      # every platform and Geant4 variant; build it in one job only.
+      skip:
+        - not (linux and x86_64)
     requirements:
+      # Pin the version only. Exact pins gave one noarch build per platform
+      # and Geant4 variant, all with the same version and build number, so
+      # the solver could not prefer the newest Geant4 and fell back to
+      # 10.7.4. The subpackages pin each other exactly, so the stack stays
+      # consistent, and the Geant4 choice is made on geomodel-fullsimlight,
+      # whose dependencies name the Geant4 version.
       run:
-        - ${{ pin_subpackage('geomodel-core', exact=True) }}
-        - ${{ pin_subpackage('geomodel-tools', exact=True) }}
-        - ${{ pin_subpackage('geomodel-g4', exact=True) }}
-        - ${{ pin_subpackage('geomodel-fullsimlight', exact=True) }}
+        - ${{ pin_subpackage('geomodel-core', upper_bound='x.x.x') }}
+        - ${{ pin_subpackage('geomodel-tools', upper_bound='x.x.x') }}
+        - ${{ pin_subpackage('geomodel-g4', upper_bound='x.x.x') }}
+        - ${{ pin_subpackage('geomodel-fullsimlight', upper_bound='x.x.x') }}
     tests:
       - script:
           - test -f $PREFIX/bin/gmcat
